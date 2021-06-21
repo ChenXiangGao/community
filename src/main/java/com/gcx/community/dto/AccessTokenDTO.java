@@ -4,6 +4,7 @@ import lombok.Data;
 
 /**
  * 定义从github授权验证api 拿到的 accesstoken 数据传输对象
+ * 在类与类之间传输实体类
  */
 
 @Data
