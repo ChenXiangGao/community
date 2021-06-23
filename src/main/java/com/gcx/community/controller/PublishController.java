@@ -46,16 +46,16 @@ public class PublishController {
             model.addAttribute("error", "标签不能为空");
             return "publish";
         }
+        User user = (User) request.getSession().getAttribute("user");
         Question question = new Question();
         question.setTitle(title);
         question.setDescription(description);
         question.setTag(tag);
-        User user = (User) request.getSession().getAttribute("user");
         if (user == null) {
             model.addAttribute("error", "用户未登录");
         }
         if (user != null) {
-            question.setId(user.getId());
+            question.setCreator(user.getId());
         }
         question.setGmtCreate(System.currentTimeMillis());
         question.setGmtModified(question.getGmtCreate());
