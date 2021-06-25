@@ -1,33 +1,46 @@
 package com.gcx.community.controller;
 
+import com.gcx.community.model.User;
 import com.gcx.community.service.QuestionService;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 @Controller
-public class IndexController {
+public class ProfileController {
 
     @Autowired
     private QuestionService questionService;
 
-    @GetMapping("/")
-    public String index(
-            @RequestParam(name = "page", defaultValue = "1") Integer page,
-            @RequestParam(name = "size", defaultValue = "2") Integer size,
-            Model model) {
+    @GetMapping("/profile/{action}")
+    public String profile(HttpServletRequest request,
+                          @PathVariable(name = "action") String action,
+                          Model model,
+                          @RequestParam(name = "page", defaultValue = "1") Integer page,
+                          @RequestParam(name = "size", defaultValue = "2") Integer size) {
 
-        // 在返回主页面时，需要获取到问题列表中的信息
-        PageInfo pageInfo = questionService.list(page, size);
+        User user = (User)request.getSession().getAttribute("user");
+        if (user == null) return "redirect:/";
 
-        // 然后再把问题列表映射到前端
+        if ("questions".equals(action)) {
+            model.addAttribute("section", "questions");
+            model.addAttribute("sectionName", "我的提问");
+        } else if ("replies".equals(action)){
+            model.addAttribute("section", "replies");
+            model.addAttribute("sectionName", "我的回复");
+        }
+
+        // 从qusetionService中获取到的pageInfo对象，不同的是这次获取的是同一个User提出的问题
+        PageInfo pageInfo = questionService.list(user.getId(), page, size);
         model.addAttribute("pageInfo", pageInfo);
 
         // 处理前端分页栏变动问题
@@ -54,6 +67,6 @@ public class IndexController {
         }
         model.addAttribute("pageNums", pageNums);
 
-        return "index";
+        return "profile";
     }
 }
