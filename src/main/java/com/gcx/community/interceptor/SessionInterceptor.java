@@ -2,6 +2,7 @@ package com.gcx.community.interceptor;
 
 import com.gcx.community.mapper.UserMapper;
 import com.gcx.community.model.User;
+import com.gcx.community.model.UserExample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -10,6 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 
 /**
@@ -32,10 +34,13 @@ public class SessionInterceptor implements HandlerInterceptor {
                 if (cookie.getName().equals("token")) {
                     String token = cookie.getValue();
                     // 在返回主页时，需要从token中去到user的值，并将其与数据库中的值进行比较
-                    User user = userMapper.findByToken(token);
+                    UserExample userExample = new UserExample(); // 创建一个userExample对象
+                    userExample.createCriteria() //创建一个sql表达式
+                            .andTokenEqualTo(token); // 拼接sql语句，这样就不用自己手写sql
+                    List<User> users = userMapper.selectByExample(userExample);
                     // 当user不为null时，就可以写入到session中来展示
-                    if (user != null) {
-                        request.getSession().setAttribute("user", user);
+                    if (users.size() != 0) {
+                        request.getSession().setAttribute("user", users.get(0));
                     }
                     break;
                 }
