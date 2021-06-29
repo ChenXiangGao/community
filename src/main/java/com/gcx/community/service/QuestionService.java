@@ -1,6 +1,8 @@
 package com.gcx.community.service;
 
 import com.gcx.community.dto.QuestionDTO;
+import com.gcx.community.exception.CustomizeErrorCode;
+import com.gcx.community.exception.CustomizeException;
 import com.gcx.community.mapper.QuestionMapper;
 import com.gcx.community.mapper.UserMapper;
 import com.gcx.community.model.Question;
@@ -103,6 +105,9 @@ public class QuestionService {
     public QuestionDTO getById(Integer id) {
         // 根据id从数据库中查询到question对象
         Question question = questionMapper.selectByPrimaryKey(id);
+        if (question == null) {
+            throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
+        }
         // 根据问题的创建者id到user表中拿到该id的所有信息
         User user = userMapper.selectByPrimaryKey(question.getCreator());
         QuestionDTO questionDTO = new QuestionDTO();
@@ -132,7 +137,11 @@ public class QuestionService {
             QuestionExample example = new QuestionExample();
             example.createCriteria()
                     .andIdEqualTo(question.getId());
-            questionMapper.updateByExampleSelective(updateQuestion, example);
+            int updated = questionMapper.updateByExampleSelective(updateQuestion, example);
+            if (updated != 1) {
+                // 没有更新
+                throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
+            }
         }
     }
 }
