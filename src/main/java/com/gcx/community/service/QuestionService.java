@@ -3,6 +3,7 @@ package com.gcx.community.service;
 import com.gcx.community.dto.QuestionDTO;
 import com.gcx.community.exception.CustomizeErrorCode;
 import com.gcx.community.exception.CustomizeException;
+import com.gcx.community.mapper.QuestionExtMapper;
 import com.gcx.community.mapper.QuestionMapper;
 import com.gcx.community.mapper.UserMapper;
 import com.gcx.community.model.Question;
@@ -26,6 +27,9 @@ public class QuestionService {
 
     @Autowired
     private QuestionMapper questionMapper;
+
+    @Autowired
+    private QuestionExtMapper questionExtMapper;
 
     @Autowired
     private UserMapper userMapper;
@@ -126,6 +130,9 @@ public class QuestionService {
             // 数据库中没有该问题，创建
             question.setGmtCreate(System.currentTimeMillis());
             question.setGmtModified(question.getGmtCreate());
+            question.setViewCount(0);
+            question.setLikeCount(0);
+            question.setCommentCount(0);
             questionMapper.insert(question);
         } else {
             // 数据库已有该问题，更新
@@ -143,5 +150,12 @@ public class QuestionService {
                 throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
             }
         }
+    }
+
+    public void incView(Integer id) {
+        Question question = new Question();
+        question.setId(id);
+        question.setViewCount(1);
+        questionExtMapper.incView(question);
     }
 }
