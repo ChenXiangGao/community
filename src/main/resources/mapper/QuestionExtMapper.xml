@@ -27,4 +27,14 @@
       view_count = view_count + #{viewCount,jdbcType=INTEGER}
     where id = #{id}
   </update>
+
+  <update id="incCommentCount" parameterType="com.gcx.community.model.Question">
+    <!--
+      评论数递增操作
+    -->
+    update question
+    set
+    comment_count = comment_count + #{commentCount,jdbcType=INTEGER}
+    where id = #{id}
+  </update>
 </mapper>

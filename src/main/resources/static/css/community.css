@@ -56,3 +56,37 @@ body {
 .jumbotron {
     margin: 70px;
 }
+
+.comments {
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.menu {
+    color: #999;
+    margin-top: 5px;
+}
+
+.menu .icon {
+    margin-right: 6px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.menu .comment-icon {
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.menu .comment-icon :hover {
+    color: #499ef3;
+}
+
+.menu .active {
+    color: #499ef3;
+}
+
+.menu .icon:hover {
+    color: #499ef3;
+}

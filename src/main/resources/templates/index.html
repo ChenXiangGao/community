@@ -9,6 +9,15 @@
     <script src="/js/bootstrap.min.js" type="application/javascript"></script>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
+<script type="application/javascript">
+    window.onload = function () {
+        let closable = window.localStorage.getItem("closable");
+        if (closable == true) {
+            window.close();
+            window.localStorage.removeItem("closable");
+        }
+    }
+</script>
 <body>
 <!--导航栏-->
 <div th:insert="~{navigation :: copy}"></div>

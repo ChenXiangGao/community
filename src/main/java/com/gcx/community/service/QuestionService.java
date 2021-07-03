@@ -73,7 +73,7 @@ public class QuestionService {
      * @param size
      * @return
      */
-    public PageInfo list(Integer userId,Integer page, Integer size) {
+    public PageInfo list(Long userId,Integer page, Integer size) {
         // 开启分页
         PageHelper.startPage(page, size);
         // 从数据库中查询数据
@@ -106,7 +106,7 @@ public class QuestionService {
      * @param id
      * @return
      */
-    public QuestionDTO getById(Integer id) {
+    public QuestionDTO getById(Long id) {
         // 根据id从数据库中查询到question对象
         Question question = questionMapper.selectByPrimaryKey(id);
         if (question == null) {
@@ -152,7 +152,7 @@ public class QuestionService {
         }
     }
 
-    public void incView(Integer id) {
+    public void incView(Long id) {
         Question question = new Question();
         question.setId(id);
         question.setViewCount(1);
