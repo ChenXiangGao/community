@@ -2,6 +2,7 @@ package com.gcx.community.controller;
 
 import com.gcx.community.dto.CommentUserDTO;
 import com.gcx.community.dto.QuestionDTO;
+import com.gcx.community.enums.CommentTypeEnum;
 import com.gcx.community.service.CommentService;
 import com.gcx.community.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class QuestionController {
         //累加阅读数
         questionService.incView(id);
         // 展示当前id的评论列表
-        List<CommentUserDTO> commentLists = commentService.findAllById(id);
+        List<CommentUserDTO> commentLists = commentService.findAllByParentId(id, CommentTypeEnum.QUESTION);
         // 传入到前端页面，展示
         model.addAttribute("question", questionDTO);
         model.addAttribute("comments",commentLists);

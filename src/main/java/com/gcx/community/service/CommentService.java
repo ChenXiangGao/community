@@ -4,10 +4,7 @@ import com.gcx.community.dto.CommentUserDTO;
 import com.gcx.community.enums.CommentTypeEnum;
 import com.gcx.community.exception.CustomizeErrorCode;
 import com.gcx.community.exception.CustomizeException;
-import com.gcx.community.mapper.CommentMapper;
-import com.gcx.community.mapper.QuestionExtMapper;
-import com.gcx.community.mapper.QuestionMapper;
-import com.gcx.community.mapper.UserMapper;
+import com.gcx.community.mapper.*;
 import com.gcx.community.model.Comment;
 import com.gcx.community.model.CommentExample;
 import com.gcx.community.model.Question;
@@ -37,6 +34,9 @@ public class CommentService {
 
     @Autowired
     private CommentMapper commentMapper;
+
+    @Autowired
+    private CommentExtMapper commentExtMapper;
 
     @Autowired
     private UserMapper userMapper;
@@ -72,6 +72,8 @@ public class CommentService {
                 throw new CustomizeException(CustomizeErrorCode.COMMENT_NOT_FOUND);
             }
             commentMapper.insert(comment);
+            parentComment.setCommentCount(1);
+            commentExtMapper.incCommentCount(parentComment);
         }
     }
 
@@ -80,15 +82,17 @@ public class CommentService {
      * 查询question中id=？的type=1的所有评论，表示评论为评论问题，而不是二级评论
      *
      * @param id
+     * @param type
      * @return 返回评论问题id=？并且是一级评论的所有评论信息及评论人信息
      */
-    public List<CommentUserDTO> findAllById(Long id) {
+    public List<CommentUserDTO> findAllByParentId(Long id, CommentTypeEnum type) {
         List<CommentUserDTO> commentUserDTOS = new ArrayList<>();
         //拿到评论
         CommentExample commentExample = new CommentExample();
         commentExample.createCriteria()
                 .andParentIdEqualTo(id)
-                .andTypeEqualTo(CommentTypeEnum.QUESTION.getType());
+                .andTypeEqualTo(type.getType());
+        commentExample.setOrderByClause("gmt_create desc");
         List<Comment> comments = commentMapper.selectByExample(commentExample);
         //错误校验
         if (comments == null || comments.size() == 0) {

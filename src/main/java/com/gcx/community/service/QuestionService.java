@@ -45,7 +45,9 @@ public class QuestionService {
         // 开启分页
         PageHelper.startPage(page, size);
         // 从数据库中查询数据
-        List<Question> questions = questionMapper.selectByExample(null);
+        QuestionExample example = new QuestionExample();
+        example.setOrderByClause("gmt_create desc");
+        List<Question> questions = questionMapper.selectByExample(example);
         // 获取分页信息
         PageInfo questionPageInfo = new PageInfo<>(questions);
         // 创建需要分页的questionDTOs
@@ -80,6 +82,7 @@ public class QuestionService {
         QuestionExample questionExample = new QuestionExample();
         questionExample.createCriteria()
                         .andCreatorEqualTo(userId);
+        questionExample.setOrderByClause("gmt_create desc");//按创建时间倒序排列
         List<Question> questions = questionMapper.selectByExample(questionExample);
         // 获取分页信息
         PageInfo questionPageInfo = new PageInfo<>(questions);

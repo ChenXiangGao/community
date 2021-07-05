@@ -12,9 +12,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Data
 @ResponseBody
-public class ResultDTO {
+public class ResultDTO<T> {
     private Integer code;
     private String message;
+    private T data;
 
     /**
      * 对传入的code和message进行封装并返回一个ResultDTO的JSON对象
@@ -54,6 +55,14 @@ public class ResultDTO {
         ResultDTO resultDTO = new ResultDTO();
         resultDTO.setCode(200);
         resultDTO.setMessage("请求成功");
+        return resultDTO;
+    }
+
+    public static <T> ResultDTO successReturn(T t) {
+        ResultDTO resultDTO = new ResultDTO();
+        resultDTO.setCode(200);
+        resultDTO.setMessage("请求成功");
+        resultDTO.setData(t);
         return resultDTO;
     }
 }
