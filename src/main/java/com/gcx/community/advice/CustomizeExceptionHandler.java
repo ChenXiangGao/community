@@ -35,6 +35,7 @@ public class CustomizeExceptionHandler {
             if (e instanceof CustomizeException) {
                 // 客户端问题的错误返回信息
                 model.addAttribute("message", e.getMessage());
+                e.printStackTrace();
             } else {
                 // 服务器问题的错误返回信息
                 model.addAttribute("message", CustomizeErrorCode.SYSTEM_ERROR.getMessage());

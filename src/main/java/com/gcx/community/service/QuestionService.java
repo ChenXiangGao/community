@@ -11,12 +11,15 @@ import com.gcx.community.model.QuestionExample;
 import com.gcx.community.model.User;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 中间层的作用，负责组装、调用、使用数据库对象以及其对象的mapper
@@ -155,10 +158,49 @@ public class QuestionService {
         }
     }
 
+    /**
+     * 浏览数增加
+     * @param id
+     */
     public void incView(Long id) {
         Question question = new Question();
         question.setId(id);
         question.setViewCount(1);
         questionExtMapper.incView(question);
+    }
+
+
+    /**
+     * 根据对应id的tag信息来进行模糊查询
+     * 以展示相关问题列表
+     * @param selectedDTO
+     * @return
+     */
+    public List<QuestionDTO> selectRelated(QuestionDTO selectedDTO) {
+        if (selectedDTO.getTag().isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        // 拿到tags
+        String[] tags = StringUtils.split(selectedDTO.getTag(), ",");
+        //JAVA8新特性，Arrays.stream(Object)将Object转换为流对象，然后再对其进行一些列的聚合操作，如映射，过滤，归约（返回列表集合等）
+        String regexpTags = Arrays
+                .stream(tags)
+                .filter(StringUtils::isNotBlank)
+                .map(t -> t.replace("+", "").replace("*", "").replace("?", ""))
+                .filter(StringUtils::isNotBlank)
+                .collect(Collectors.joining("|"));
+
+        Question question = new Question();
+        question.setId(selectedDTO.getId());
+        question.setTag(regexpTags);
+        List<Question> questions = questionExtMapper.selectRelated(question);
+        List<QuestionDTO> questionDTOS = questions.stream().map(question1 -> {
+            QuestionDTO questionDTO = new QuestionDTO();
+            BeanUtils.copyProperties(question1, questionDTO);
+            return questionDTO;
+        }).collect(Collectors.toList());
+
+        return questionDTOS;
     }
 }

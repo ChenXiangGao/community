@@ -8,6 +8,7 @@ import com.gcx.community.exception.CustomizeErrorCode;
 import com.gcx.community.model.Comment;
 import com.gcx.community.model.User;
 import com.gcx.community.service.CommentService;
+import com.gcx.community.service.LikeService;
 import com.github.pagehelper.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,6 +22,7 @@ public class CommentController {
 
     @Autowired
     private CommentService commentService;
+
     /*
         @RequestBody:自动将commentDTO对象中的每个属性映射为json的key
      */
@@ -44,8 +46,8 @@ public class CommentController {
         comment.setGmtModified(System.currentTimeMillis());
         comment.setGmtCreate(System.currentTimeMillis());
         comment.setCommentator(user.getId());
-        comment.setLikeCount(0L);
         comment.setCommentCount(0);
+        comment.setLikeCount(0L);
         commentService.insert(comment);
         return ResultDTO.successReturn();
     }

@@ -37,4 +37,20 @@
     comment_count = comment_count + #{commentCount,jdbcType=INTEGER}
     where id = #{id}
   </update>
+
+  <select id="selectRelated" parameterType="com.gcx.community.model.Question" resultMap="BaseResultMap">
+    <!--
+      正则匹配，模糊查询
+    -->
+    select * from question
+    <where>
+        <if test="id != null">
+            and id != #{id}
+        </if>
+        <if test="tag != null and tag != ''">
+            and tag regexp #{tag}
+      </if>
+    </where>
+    order by gmt_create desc limit 20
+  </select>
 </mapper>
