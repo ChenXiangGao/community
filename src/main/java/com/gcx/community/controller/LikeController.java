@@ -3,8 +3,13 @@ package com.gcx.community.controller;
 import com.gcx.community.dto.CommentUserDTO;
 import com.gcx.community.dto.LikeDTO;
 import com.gcx.community.dto.ResultDTO;
+import com.gcx.community.enums.CommentTypeEnum;
+import com.gcx.community.event.EventProducer;
 import com.gcx.community.exception.CustomizeErrorCode;
+import com.gcx.community.model.Comment;
+import com.gcx.community.model.Event;
 import com.gcx.community.model.User;
+import com.gcx.community.service.CommentService;
 import com.gcx.community.service.LikeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,6 +27,12 @@ public class LikeController {
     @Autowired
     private LikeService likeService;
 
+    @Autowired
+    private CommentService commentService;
+
+    @Autowired
+    private EventProducer eventProducer;
+
     /**
      * 点赞操作
      * @param likedUserId
@@ -38,6 +49,20 @@ public class LikeController {
         }
         likeService.putLike2Redis(likedUserId, String.valueOf(user.getId()));
         likeService.incLikedCount(likedUserId);
+
+        // 触发点赞事件
+        if (likeService.getLikedStatus(likedUserId, user.getId().toString()) == 1) {
+            Event event = new Event();
+            event.setTopic("like");
+            event.setUserId(user.getId());
+            event.setEntityType(CommentTypeEnum.COMMENT.getType());
+            event.setEntityId(Long.valueOf(likedUserId));
+            Comment comment = commentService.selectById(Long.valueOf(likedUserId));
+            event.setEntityUserId(comment.getCommentator());
+            event.setData("questionId", comment.getParentId());
+            eventProducer.fireEvent(event);
+        }
+
         return ResultDTO.successReturn();
     }
 

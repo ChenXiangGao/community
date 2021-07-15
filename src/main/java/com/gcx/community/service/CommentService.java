@@ -1,5 +1,6 @@
 package com.gcx.community.service;
 
+import com.gcx.community.dto.CommentDTO;
 import com.gcx.community.dto.CommentUserDTO;
 import com.gcx.community.enums.CommentTypeEnum;
 import com.gcx.community.exception.CustomizeErrorCode;
@@ -108,5 +109,9 @@ public class CommentService {
             commentUserDTOS.add(commentUserDTO);
         }
         return commentUserDTOS;
+    }
+
+    public Comment selectById(Long id) {
+        return commentMapper.selectByPrimaryKey(id);
     }
 }

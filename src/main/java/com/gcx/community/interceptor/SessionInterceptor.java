@@ -3,6 +3,7 @@ package com.gcx.community.interceptor;
 import com.gcx.community.mapper.UserMapper;
 import com.gcx.community.model.User;
 import com.gcx.community.model.UserExample;
+import com.gcx.community.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -11,6 +12,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 
@@ -23,6 +25,9 @@ public class SessionInterceptor implements HandlerInterceptor {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private NotificationService notificationService;
 
     // 需要重写三个方法
 
@@ -40,7 +45,11 @@ public class SessionInterceptor implements HandlerInterceptor {
                     List<User> users = userMapper.selectByExample(userExample);
                     // 当user不为null时，就可以写入到session中来展示
                     if (users.size() != 0) {
-                        request.getSession().setAttribute("user", users.get(0));
+                        HttpSession session = request.getSession();
+                        session.setAttribute("user", users.get(0));
+                        Long unReadCount = notificationService.unReadCount(users.get(0).getId());
+                        session.setAttribute("unReadCount", unReadCount);
+//                        System.out.println(unReadCount);
                     }
                     break;
                 }

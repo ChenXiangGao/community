@@ -42,11 +42,11 @@ public class QuestionController {
 
         // 获取当前登录用户的id
         User user = (User) request.getSession().getAttribute("user");
-        System.out.println(user.getId());
+//        System.out.println(user.getId());
         for (CommentUserDTO commentUserDTO : commentList) {
             Integer likedStatus = likeService.getLikedStatus(String.valueOf(commentUserDTO.getId()), String.valueOf(user.getId()));
             Integer likedCount = likeService.getLikedCount(String.valueOf(commentUserDTO.getId()));
-            System.out.println(likedStatus + "::" + likedCount);
+//            System.out.println(likedStatus + "::" + likedCount);
             commentUserDTO.setLikedStatus(likedStatus);
             if (likedCount != null) {
                 commentUserDTO.setLikeCount(Long.valueOf(likedCount));

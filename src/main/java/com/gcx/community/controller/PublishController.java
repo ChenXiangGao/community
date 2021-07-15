@@ -1,9 +1,11 @@
 package com.gcx.community.controller;
 
+import com.gcx.community.cache.TagCache;
 import com.gcx.community.dto.QuestionDTO;
 import com.gcx.community.model.Question;
 import com.gcx.community.model.User;
 import com.gcx.community.service.QuestionService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,12 +29,14 @@ public class PublishController {
         model.addAttribute("title", question.getTitle());
         model.addAttribute("description", question.getDescription());
         model.addAttribute("tag", question.getTag());
+        model.addAttribute("tags", TagCache.get());
         model.addAttribute("id", question.getId());
         return "publish";
     }
 
     @GetMapping("/publish")
-    public String publish() {
+    public String publish(Model model) {
+        model.addAttribute("tags", TagCache.get());
         return "publish";
     }
 
@@ -49,6 +53,7 @@ public class PublishController {
         model.addAttribute("title", title);
         model.addAttribute("description", description);
         model.addAttribute("tag", tag);
+        model.addAttribute("tags", TagCache.get());
         if (title == null || title.equals("")) {
             model.addAttribute("error", "标题不能为空");
             return "publish";
@@ -61,6 +66,12 @@ public class PublishController {
             model.addAttribute("error", "标签不能为空");
             return "publish";
         }
+        String invalid = TagCache.filterInvalid(tag);
+        if (StringUtils.isNotEmpty(invalid)) {
+            model.addAttribute("error", "输入非法标签: " + invalid);
+            return "publish";
+        }
+
         User user = (User) request.getSession().getAttribute("user");
         if (user == null) {
             model.addAttribute("error", "用户未登录");

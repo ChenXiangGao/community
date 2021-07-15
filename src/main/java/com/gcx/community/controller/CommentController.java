@@ -2,13 +2,17 @@ package com.gcx.community.controller;
 
 import com.gcx.community.dto.CommentDTO;
 import com.gcx.community.dto.CommentUserDTO;
+import com.gcx.community.dto.QuestionDTO;
 import com.gcx.community.dto.ResultDTO;
 import com.gcx.community.enums.CommentTypeEnum;
+import com.gcx.community.event.EventProducer;
 import com.gcx.community.exception.CustomizeErrorCode;
 import com.gcx.community.model.Comment;
+import com.gcx.community.model.Event;
 import com.gcx.community.model.User;
 import com.gcx.community.service.CommentService;
 import com.gcx.community.service.LikeService;
+import com.gcx.community.service.QuestionService;
 import com.github.pagehelper.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,6 +26,12 @@ public class CommentController {
 
     @Autowired
     private CommentService commentService;
+
+    @Autowired
+    private QuestionService questionService;
+
+    @Autowired
+    private EventProducer eventProducer;
 
     /*
         @RequestBody:自动将commentDTO对象中的每个属性映射为json的key
@@ -49,6 +59,25 @@ public class CommentController {
         comment.setCommentCount(0);
         comment.setLikeCount(0L);
         commentService.insert(comment);
+
+        //触发评论事件
+        Event event = new Event();
+        event.setTopic("comment");
+        event.setUserId(user.getId());
+        // 区分回复的是评论还是问题
+        event.setEntityType(comment.getType());
+        event.setEntityId(comment.getId());
+        QuestionDTO questionDTO = questionService.getById(commentDTO.getParentId());
+        if (questionDTO != null) {
+            event.setEntityUserId(questionDTO.getCreator());
+            event.setData("questionId", questionDTO.getId());
+        } else {
+            Comment parentComment = commentService.selectById(commentDTO.getParentId());
+            event.setEntityUserId(parentComment.getCommentator());
+            event.setData("questionId", parentComment.getParentId());
+        }
+        eventProducer.fireEvent(event);
+
         return ResultDTO.successReturn();
     }
 

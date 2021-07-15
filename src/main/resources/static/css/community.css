@@ -115,6 +115,12 @@ body {
     color: #499ef3;
 }
 
+.publish-tag-tab {
+    display: none;
+    margin-top: 10px;
+    padding-top: 10px;
+}
+
 .publish-tag-tab .label-info {
     white-space: normal;
     margin: 5px 5px;

@@ -18,8 +18,8 @@
         <div class="col-lg-9 col-md-12 col-sm-12 col-xs-12">
             <h2><span th:text="${sectionName}"></span></h2>
             <hr>
-            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <div class="media" th:each="question:${pageInfo.list}">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" th:if="${section == 'questions'}">
+                <div class="media" th:each="question : ${pageInfo.list}">
                     <div class="media-left">
                         <a href="#">
                             <img class="media-object img-rounded"
@@ -27,11 +27,46 @@
                         </a>
                     </div>
                     <div class="media-body">
-                        <h4 class="media-heading" th:text="${question.title}"></h4>
-                        <span th:text="${question.description}"></span><br>
+                        <h4 class="media-heading">
+                            <a th:href="@{'/question/' + ${question.id}}" th:text="${question.title}"></a>
+                        </h4>
                         <span class="text-desc"><span th:text="${question.commentCount}"></span>个回复 ·
                         <span th:text="${question.viewCount}"></span>次浏览 ·
                         <span th:text="${#dates.format(question.gmtCreate, 'yyyy-MM-dd HH:mm')}"></span></span>
+
+                        <a th:href="@{'/publish/'+${question.id}}" class="community-menu"
+                           th:if="${session.user != null && session.user.id == question.creator}">
+                            <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                            编辑
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" th:if="${section == 'replies'}">
+                <div class="media" th:each="notification : ${pageInfo.list}">
+                    <div class="media-body">
+                        <p class="media-heading">
+                            <span th:text="${notification.notifierName + ' 回复了你 '}"></span>
+                            <a th:href="@{'/notification/'+ ${notification.id}}"
+                               th:text="${notification.outerTitle}">
+                            </a>
+                            <span class="label label-danger" th:if="${notification.status == 0}">未读</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" th:if="${section == 'likes'}">
+                <div class="media" th:each="notification : ${pageInfo.list}">
+                    <div class="media-body">
+                        <p class="media-heading">
+                            <span th:text="${notification.notifierName + ' 赞了你 '}"></span>
+                            <a th:href="@{'/notification/'+ ${notification.id}}"
+                               th:text="${notification.outerTitle}">
+                            </a>
+                            <span class="label label-danger" th:if="${notification.status == 0}">未读</span>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -47,7 +82,7 @@
                             <span aria-hidden="true">&lt;</span>
                         </a>
                     </li>
-                    <li th:each="page : ${pageNums}">
+                    <li th:each="page : ${pageInfo.navigatepageNums}">
                         <a th:href="'/profile/'+${section}+'/?page='+${page}" th:text="${page}" th:if="${page != pageInfo.pageNum}"></a>
                         <span style="font-weight: bold;background: #6faed9;" th:if="${page == pageInfo.pageNum}" th:text="${page}" ></span>
                     </li>
@@ -70,7 +105,12 @@
                 <a href="/profile/replies"
                    th:class="${section == 'replies'}? 'active list-group-item' : 'list-group-item'">
                     最新回复
-<!--                    <span class="badge" th:text="${session.unreadCount}"></span>-->
+                    <span class="badge" th:text="${cUnReadCount}"></span>
+                </a>
+                <a href="/profile/likes"
+                   th:class="${section == 'likes'}? 'active list-group-item' : 'list-group-item'">
+                    我收到的点赞
+                    <span class="badge" th:text="${lUnReadCount}"></span>
                 </a>
             </div>
         </div>

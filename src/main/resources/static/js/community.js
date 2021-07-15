@@ -122,6 +122,7 @@ function collapseComments(e) {
  */
 function like(obj) {
     var likedUserId = obj.getAttribute("data-id");
+    console.log(likedUserId)
     var flag =  $(obj).hasClass("liked");
     var like_count = Number($(obj).find('span').eq(1).text())
     if (!flag){
@@ -146,4 +147,21 @@ function like(obj) {
         })
     }
 
+}
+
+
+function showSelectTag(){
+    $("#select-tag").show();
+}
+
+function selectTag(e) {
+    var value = e.getAttribute("data-tag");
+    var previous = $("#tag").val();
+    if (previous.indexOf(value) == -1) {
+        if (previous) {
+            $("#tag").val(previous + ',' + value);
+        } else {
+            $("#tag").val(value);
+        }
+    }
 }
