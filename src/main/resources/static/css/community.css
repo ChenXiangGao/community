@@ -126,3 +126,8 @@ body {
     margin: 5px 5px;
     display: inline-block;
 }
+
+em {
+    font-style: normal;
+    color: red;
+}

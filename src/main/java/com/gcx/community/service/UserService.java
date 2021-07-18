@@ -44,4 +44,9 @@ public class UserService {
             userMapper.updateByExampleSelective(updateUser, example);
         }
     }
+
+
+    public User findUserById(Long id) {
+        return userMapper.selectByPrimaryKey(id);
+    }
 }

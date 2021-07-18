@@ -128,6 +128,15 @@ public class QuestionService {
     }
 
     /**
+     * 根据id拿到数据库中的问题
+     * @param id
+     * @return
+     */
+    public Question findById(Long id) {
+        return questionMapper.selectByPrimaryKey(id);
+    }
+
+    /**
      * 问题的创建与更新
      * @param question
      */

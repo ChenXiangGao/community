@@ -47,25 +47,27 @@
             <!--显示分页信息-->
             <nav aria-label="Page navigation" class="col-lg-9 col-md-12 col-sm-12 col-xs-12">
                 <ul class="pagination">
-                    <li th:if="${pageInfo.hasPreviousPage}">
-                        <a th:href="'/?page=1'">首页</a>
+                    <li th:if="${pageInfo.isHasPreviousPage()}">
+                        <a th:href="@{/(page=1,keyword=${keyword})}" aria-label="Previous">
+                            <span aria-hidden="true">首页</span>
+                        </a>
                     </li>
                     <li th:if="${pageInfo.hasPreviousPage}">
-                        <a th:href="'/?page=' + ${pageInfo.prePage}" aria-label="Previous">
+                        <a th:href="@{/(page=${pageInfo.pageNum - 1},keyword=${keyword})}" aria-label="Previous">
                             <span aria-hidden="true">&lt;</span>
                         </a>
                     </li>
                     <li th:each="page : ${pageNums}">
-                        <a th:href="'/?page='+${page}" th:text="${page}" th:if="${page != pageInfo.pageNum}"></a>
+                        <a th:href="@{/(page=${page},keyword=${keyword})}" th:text="${page}" th:if="${page != pageInfo.pageNum}"></a>
                         <span style="font-weight: bold;background: #6faed9;" th:if="${page == pageInfo.pageNum}" th:text="${page}" ></span>
                     </li>
                     <li th:if="${pageInfo.hasNextPage}">
-                        <a th:href="'/?page='+ ${pageInfo.nextPage}" aria-label="Next">
+                        <a th:href="@{/(page=${pageInfo.nextPage},keyword=${keyword})}" aria-label="Next">
                             <span aria-hidden="true">&gt;</span>
                         </a>
                     </li>
                     <li th:if="${pageInfo.hasNextPage}">
-                        <a th:href="'/?page='+${pageInfo.pages}">尾页</a>
+                        <a th:href="@{/(page=${pageInfo.pages},keyword=${keyword})}">尾页</a>
                     </li>
                 </ul>
             </nav>

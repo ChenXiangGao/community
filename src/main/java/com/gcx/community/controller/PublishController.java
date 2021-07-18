@@ -2,6 +2,8 @@ package com.gcx.community.controller;
 
 import com.gcx.community.cache.TagCache;
 import com.gcx.community.dto.QuestionDTO;
+import com.gcx.community.event.EventProducer;
+import com.gcx.community.model.Event;
 import com.gcx.community.model.Question;
 import com.gcx.community.model.User;
 import com.gcx.community.service.QuestionService;
@@ -21,6 +23,9 @@ public class PublishController {
 
     @Autowired
     private QuestionService questionService;
+
+    @Autowired
+    private EventProducer eventProducer;
 
     @GetMapping("/publish/{id}")
     public String edit(@PathVariable(name = "id") Long id,
@@ -84,6 +89,17 @@ public class PublishController {
         question.setCreator(user.getId());
         question.setId(id);
         questionService.createOrUpdate(question);
+
+        // 触发提问事件
+        Event event = new Event();
+        event.setTopic("publish");
+        event.setUserId(user.getId());
+        event.setEntityType(0);
+        event.setEntityId(question.getId());
+        event.setEntityUserId(question.getCreator());
+
+        eventProducer.fireEvent(event);
+
         return "publish";
     }
 }

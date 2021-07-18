@@ -24,11 +24,11 @@
                 <input type="hidden" name="id" th:value="${id}">
                 <div class="form-group">
                     <label for="title">问题标题（简单扼要）</label>
-                    <input type="text" class="form-control" th:value="${title}" id="title" name="title" placeholder="问题标题">
+                    <input type="text" class="form-control" th:value="${title}" id="title" name="title" placeholder="问题标题" autocomplete="off">
                 </div>
                 <div class="form-group">
                     <label for="title">问题补充（必填，请参照右侧提示）</label>
-                    <textarea name="description" id="description" class="form-control" th:text="${description}" cols="50" rows="20"></textarea>
+                    <textarea name="description" id="description" class="form-control" th:text="${description}" cols="50" rows="20" autocomplete="off"></textarea>
                 </div>
                 <div class="form-group">
                     <label for="tag">添加标签</label>

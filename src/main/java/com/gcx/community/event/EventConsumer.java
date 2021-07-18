@@ -5,7 +5,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.gcx.community.enums.NotificationStatusEnum;
 import com.gcx.community.model.Event;
 import com.gcx.community.model.Notification;
+import com.gcx.community.model.Question;
+import com.gcx.community.service.ElasticsearchService;
 import com.gcx.community.service.NotificationService;
+import com.gcx.community.service.QuestionService;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -19,6 +22,12 @@ public class EventConsumer {
 
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+    private QuestionService questionService;
+
+    @Autowired
+    private ElasticsearchService elasticsearchService;
 
     @KafkaListener(topics = {"comment", "like"})
     public void handleNotification(ConsumerRecord record) {
@@ -53,6 +62,25 @@ public class EventConsumer {
 
         notificationService.createNotification(notification);
 //        System.out.println("插入成功");
+    }
+
+
+    @KafkaListener(topics = {"publish"})
+    public void handlePublish(ConsumerRecord record) {
+        if (record == null || record.value() == null) {
+            System.out.println("发布的内容为空！");
+            return;
+        }
+        Event event = JSONObject.parseObject(record.value().toString(), Event.class);
+        if (event == null) {
+            System.out.println("发布的格式错误！");
+            return;
+        }
+
+        Question question = questionService.findById(event.getEntityId());
+
+        elasticsearchService.saveQuestion(question);
+        System.out.println("存入成功");
     }
 
 }
